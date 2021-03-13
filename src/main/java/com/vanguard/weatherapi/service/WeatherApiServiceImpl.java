@@ -25,8 +25,13 @@ public class WeatherApiServiceImpl implements WeatherApiService {
 
     @Override
     public WeatherInfo fetchCurrentWeather(String city, String country) {
-        Response response = restTemplate.getForObject(API_URL.replace("QUERY", city + "," + country), Response.class);
-        return weatherRepo.save(new WeatherInfo(city, country, response.getWeather().get(0).getDescription()));
+        try {
+            Response response = restTemplate.getForObject(API_URL.replace("QUERY", city + "," + country),
+                    Response.class);
+            return weatherRepo.save(new WeatherInfo(city, country, response.getWeather().get(0).getDescription()));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Bean
