@@ -2,16 +2,26 @@ package com.vanguard.weatherapi.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "TRACK_KEY_USAGE")
 public class TrackKeyUsage {
 
-    private @Id @GeneratedValue Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
+
+    @Column(name = "KEY_NAME")
     private String keyName;
+
+    @Column(name = "COUNT")
     private Integer count;
+
+    @Column(name = "LAST_USED")
     private Date lastUsed;
 
     public Long getId() {
