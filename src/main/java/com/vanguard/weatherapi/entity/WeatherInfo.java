@@ -1,14 +1,15 @@
 package com.vanguard.weatherapi.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
 @Entity
+@JsonFilter("userFilter")
 public class WeatherInfo {
 
     private @Id @GeneratedValue(strategy = GenerationType.AUTO) Long id;
@@ -21,9 +22,6 @@ public class WeatherInfo {
 
     @Column(name = "DESCRIPTION")
     private String description;
-
-    @Column(name = "CREATED")
-    private Date created;
 
     public Long getId() {
         return id;
@@ -49,19 +47,17 @@ public class WeatherInfo {
         this.country = country;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public WeatherInfo(String cityName, String country, String description) {
+        this.cityName = cityName;
+        this.country = country;
         this.description = description;
     }
 
