@@ -2,10 +2,16 @@
 
 This project exposes a REST api built on Spring Boot to fetch current weather data based on city and country. The implementation also adds rate limits on api calls combined with issuing tokens.
 
-== Technologies used
+== System Requirements
+* Java 1.8 or higher
+* Apache maven
+* Postman (or similar tool)
+
+== Technologies Used
 
 * Java 1.8
 * Spring Boot 2.4.3
+* In-memory H2 database used
 * Apache Tomcat (local dev server)
 
 == Executing the solution
@@ -25,5 +31,22 @@ Sample payload  :
         "city":"sydney",
         "country":"AUS"
         }
-
+Header variable : 
+    X-TOKEN: <TOKEN_VALUE>
 ----
+
+== Sample output
+[indent=0]
+----
+{
+    "description": "light rain"
+}
+----
+
+== Project Assumptions
+* Token generation and distribution is not in scope of the project. Hard coded tokens are used (token-1, token-2, token-3, token-4, token-5).
+* In memory H2 database used.
+
+== License
+Copyright 2021 - Licensed to Bharath Maturi. Using part or all of the code needs explicit approval from Bharath Maturi.
+
