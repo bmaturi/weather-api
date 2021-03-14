@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class WeatherApiServiceImpl implements WeatherApiService {
 
+    // Needs to be moved to an environment variable.
     private final String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=QUERY&appid=5d9dbc993b839cedd5bfa6dd09aa63cd";
 
     @Autowired
