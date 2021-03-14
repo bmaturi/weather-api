@@ -45,6 +45,7 @@ Header variable :
 == Project Assumptions
 * Token generation and distribution is not in scope of the project. Hard coded tokens are used (token-1, token-2, token-3, token-4, token-5).
 * In memory H2 database used.
+* Bucket4j library used for throttling under the Apache License.
 
 == License
 Copyright 2021 - Licensed to Bharath Maturi. Using part or all of the code needs explicit approval from Bharath Maturi.
