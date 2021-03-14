@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.vanguard.weatherapi.entity.WeatherInfo;
 import com.vanguard.weatherapi.exception.ErrorResponse;
+import com.vanguard.weatherapi.request.WeatherRequest;
 import com.vanguard.weatherapi.service.BucketService;
 import com.vanguard.weatherapi.service.WeatherApiService;
 
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,13 +40,14 @@ public class WeatherApiApplication {
 	@Autowired
 	BucketService bucketService;
 
-	@RequestMapping(value = "/current", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/current", method = RequestMethod.GET, consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<MappingJacksonValue> getCurrentWeather(
-			@RequestHeader(name = "X-TOKEN", required = true) String token, @RequestParam(value = "city") String city,
-			@RequestParam(value = "country") String country) {
+			@RequestHeader(name = "X-TOKEN", required = true) String token, @RequestBody WeatherRequest req) {
 
-		if (!StringUtils.hasLength(city) || !StringUtils.hasLength(country) || !StringUtils.hasLength(token)) {
-			return handleAppErrors(HttpStatus.BAD_REQUEST, "Invalid Request");
+		if (!StringUtils.hasLength(req.getCity()) || !StringUtils.hasLength(req.getCountry())
+				|| !StringUtils.hasLength(token)) {
+			return handleAppErrors(HttpStatus.BAD_REQUEST, "Invalid Request. City/Country/Token is mandatory.");
 		}
 
 		Bucket bucket = bucketService.resolveBucket(token);
@@ -55,7 +58,7 @@ public class WeatherApiApplication {
 		ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 		if (probe.isConsumed()) {
 
-			WeatherInfo info = service.fetchCurrentWeather(city, country);
+			WeatherInfo info = service.fetchCurrentWeather(req.getCity(), req.getCountry());
 			if (info == null) {
 				return handleAppErrors(HttpStatus.NOT_FOUND, "Weather info for city/country not found.");
 			}
