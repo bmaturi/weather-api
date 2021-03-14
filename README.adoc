@@ -17,8 +17,7 @@ This project exposes a REST api built on Spring Boot to fetch current weather da
 == Executing the solution
 
 * Clone this repository onto your system
-* run the command "mvn clean install" in the project root directory to build and generate the artifacts
-* run the command "java -cp ./target/weather-api-0.0.1.jar com.vanguard.weatherapi.WeatherApiApplication" to start the application
+* run the command "mvn spring-boot:run" in the project root directory to build, generate the artifacts and startup the app.
 * Using postman(or similar tool) send a request using the below details :
 
 [indent=0]
