@@ -1,8 +1,12 @@
 package com.vanguard.weatherapi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.vanguard.weatherapi.entity.WeatherInfo;
+import com.vanguard.weatherapi.exception.ErrorResponse;
 import com.vanguard.weatherapi.service.BucketService;
 import com.vanguard.weatherapi.service.WeatherApiService;
 
@@ -40,12 +44,12 @@ public class WeatherApiApplication {
 			@RequestParam(value = "country") String country) {
 
 		if (!StringUtils.hasLength(city) || !StringUtils.hasLength(country) || !StringUtils.hasLength(token)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			return handleAppErrors(HttpStatus.BAD_REQUEST, "Invalid Request");
 		}
 
 		Bucket bucket = bucketService.resolveBucket(token);
 		if (bucket == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			return handleAppErrors(HttpStatus.BAD_REQUEST, "Invalid Request");
 		}
 
 		ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
@@ -53,8 +57,7 @@ public class WeatherApiApplication {
 
 			WeatherInfo info = service.fetchCurrentWeather(city, country);
 			if (info == null) {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
+				return handleAppErrors(HttpStatus.NOT_FOUND, "Weather info for city/country not found.");
 			}
 
 			MappingJacksonValue wrapper = new MappingJacksonValue(info);
@@ -66,6 +69,15 @@ public class WeatherApiApplication {
 		long waitForRefill = probe.getNanosToWaitForRefill() / 1_000_000_000;
 		return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
 				.header("X-Rate-Limit-Retry-After-Seconds", String.valueOf(waitForRefill)).build();
+	}
+
+	// Handle app error response
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final ResponseEntity<MappingJacksonValue> handleAppErrors(HttpStatus status, String message) {
+		List<String> details = new ArrayList<>();
+		details.add(message);
+		ErrorResponse error = new ErrorResponse("Encountered error.", details);
+		return new ResponseEntity(error, status);
 	}
 
 	public static void main(String[] args) {
