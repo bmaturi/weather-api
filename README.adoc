@@ -1,6 +1,6 @@
 = Weather API
 
-This project exposes a REST api built on Spring Boot to fetch current weather data based on city and country. The implementation also adds rate limits on api calls combined with issuing tokens.
+This project exposes a REST api built on Spring Boot to fetch current weather data based on city and country. The implementation also adds rate limits on api calls combined with issuing tokens. The project uses the api exposed by the OpenWeatherMap.
 
 == System Requirements
 * Java 1.8 or higher
@@ -45,6 +45,7 @@ Header variable :
 == Project Assumptions
 * Token generation and distribution is not in scope of the project. Hard coded tokens are used (token-1, token-2, token-3, token-4, token-5).
 * In memory H2 database used.
+* OpenWeatherMap api rate limits apply.
 * Bucket4j library used for throttling under the Apache License.
 
 == License
