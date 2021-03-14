@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.bucket4j.Bucket;
@@ -45,11 +44,6 @@ public class WeatherApiApplication {
 	public ResponseEntity<MappingJacksonValue> getCurrentWeather(
 			@RequestHeader(name = "X-TOKEN", required = true) String token, @RequestBody WeatherRequest req) {
 
-		if (!StringUtils.hasLength(req.getCity()) || !StringUtils.hasLength(req.getCountry())
-				|| !StringUtils.hasLength(token)) {
-			return handleAppErrors(HttpStatus.BAD_REQUEST, "Invalid Request. City/Country/Token is mandatory.");
-		}
-
 		Bucket bucket = bucketService.resolveBucket(token);
 		if (bucket == null) {
 			return handleAppErrors(HttpStatus.BAD_REQUEST, "Invalid Request");
@@ -57,6 +51,10 @@ public class WeatherApiApplication {
 
 		ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 		if (probe.isConsumed()) {
+
+			if (!StringUtils.hasLength(req.getCity()) || !StringUtils.hasLength(req.getCountry())) {
+				return handleAppErrors(HttpStatus.BAD_REQUEST, "Invalid Request. City/Country/Token is mandatory.");
+			}
 
 			WeatherInfo info = service.fetchCurrentWeather(req.getCity(), req.getCountry());
 			if (info == null) {
@@ -70,8 +68,7 @@ public class WeatherApiApplication {
 		}
 
 		long waitForRefill = probe.getNanosToWaitForRefill() / 1_000_000_000;
-		return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-				.header("X-Rate-Limit-Retry-After-Seconds", String.valueOf(waitForRefill)).build();
+		return handleAppErrors(HttpStatus.TOO_MANY_REQUESTS, "Rate limit exceeded. Please retry in : " + waitForRefill);
 	}
 
 	// Handle app error response
