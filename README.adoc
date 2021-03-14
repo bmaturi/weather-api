@@ -1,0 +1,29 @@
+= Weather API
+
+This project exposes a REST api built on Spring Boot to fetch current weather data based on city and country. The implementation also adds rate limits on api calls combined with issuing tokens.
+
+== Technologies used
+
+* Java 1.8
+* Spring Boot 2.4.3
+* Apache Tomcat (local dev server)
+
+== Executing the solution
+
+* Clone this repository onto your system
+* run the command "mvn clean install" in the project root directory to build and generate the artifacts
+* run the command "java -cp ./target/weather-api-0.0.1.jar com.vanguard.weatherapi.WeatherApiApplication" to start the application
+* Using postman(or similar tool) send a request using the below details :
+
+[indent=0]
+----
+Method : GET
+URL : http://localhost:8080/weather/current
+Request Type : JSON
+Sample payload  :  
+        {
+        "city":"sydney",
+        "country":"AUS"
+        }
+
+----
